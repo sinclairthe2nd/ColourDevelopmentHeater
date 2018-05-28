@@ -10,29 +10,28 @@ double temp;
 double pwmOut;
 double setpoint, kP = 2, kI = 5, kD = 1;
 PID control(&temp, &pwmOut, &setpoint, kP, kI, kD, DIRECT);
-//Seven Segment Magic
-SevSeg sevseg; //Instantiate a seven segment controller object
 
-  /* TODO
-   *  7Segment output
-   *  setpoint input
-   *  
-   * 
-   */
+SevSeg sevseg; 
 
 void setup() {
-
-//sevenSegement
-byte numDigits = 2;   
-byte digitPins[] = {2, A1}; //Digits: 1,2,3,4 <--put one resistor (ex: 220 Ohms, or 330 Ohms, etc, on each digit pin)
-byte segmentPins[] = {8, A0, 4, 6, 5, 9, 7, A2}; //Segments: A,B,C,D,E,F,G,Period
-sevseg.begin(COMMON_ANODE, numDigits, digitPins, segmentPins);
-sevseg.setBrightness(256);
+  pinMode(A3, INPUT); //Setpoint toggle
+  for(int i=3; i <= 9; i++)
+    pinMode(i, OUTPUT); 
+  pinMode(A6, OUTPUT);
+  pinMode(A7, OUTPUT);
   
+  //sevenSegement
+  byte numDigits = 2;   
+  byte digitPins[] = {3, 4}; 
+  byte segmentPins[] = {5, 6, 7, 8, 9, A6, A7, A2}; //Segments: A,B,C,D,E,F,G,Period
+  sevseg.begin(COMMON_ANODE, numDigits, digitPins, segmentPins);
+  sevseg.setBrightness(256);
+
   Serial.begin(115200);
+  
   tempSensor.begin(MAX31865_2WIRE);  
   control.SetMode(AUTOMATIC);
-  setpoint = 30;
+  setpoint = 20; //Default Value 
 }
 
 // Fault logic for the Temp Sensor
@@ -67,32 +66,39 @@ int tempSensorFault(uint8_t fault) {
 
 
 void loop() {
+
+  if(digitalRead(A3) == LOW) {
+    setpoint = 30;
+  }
+  else {
+    setpoint = 38;
+  }
+  //output setpoint
   sevseg.setNumber((int)setpoint);
-  for(uint16_t i=0; i < 30000; i++) {
+  for(uint16_t i=0; i < 65000; i++) {
     sevseg.refreshDisplay();
   }
+
+  //read temperature  
   uint16_t rtd = tempSensor.readRTD();
   float ratio = rtd;
   ratio /= 32768;
   temp = (tempSensor.temperature(RNOMINAL, RREF));
-
-   uint8_t fault = tempSensor.readFault();
+  uint8_t fault = tempSensor.readFault();
 
   if(!tempSensorFault(fault)) {
     Serial.print("Temperature = "); Serial.println(temp);
     sevseg.setNumber((int)temp);
-      control.Compute();
-      analogWrite(3, pwmOut);
+    control.Compute();
+    analogWrite(2, pwmOut);
   }
 
-  //Output to Seven Segment
+  //Output current temperature
   for(uint16_t i = 0; i < 65000; i++) {
-  sevseg.refreshDisplay();
+      for(uint16_t i = 0; i < 3; i++) {
+        sevseg.refreshDisplay();
+      }
   }
-
-
-  
-
 }
 
 
