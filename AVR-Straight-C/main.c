@@ -62,11 +62,11 @@ if(INPUTNUMBER > 9) //Conditioning of the Inputnumber
         for (int a=0; a<10;a++)
             {
             NUMBER=INPUTNUMBER%10; //This extracts the last digit using modulo  
-            PORTMULTI = (1 << PORTB0)|(0<< PORTB1); // Turn on the first Display
+            PORTMULTI = (1 << PORTB1)|(0<< PORTB0); // Turn on the first Display
             Display(NUMBER);
             _delay_ms(1);
             NUMBER=INPUTNUMBER/10;  //This Shaves of the last digit of inputnumber
-            PORTMULTI = (1<< PORTB1)|(0<<PORTB0);  // Turn on Second Display
+            PORTMULTI = (1<< PORTB0)|(0<<PORTB1);  // Turn on Second Display
             Display(NUMBER);
             _delay_ms(1);
             }
@@ -84,35 +84,35 @@ void Display(int NUMBER)
 switch (NUMBER)//Maps the number in number to the display rather crudely (its very flexible and readable though)
       {
          case 0:
-         PORT_7_SEGMENT=0b01000000;
-         break;
-
-         case 1:
-         PORT_7_SEGMENT=0b01111001;
-         break;
-
-         case 2:
-         PORT_7_SEGMENT=0b00100100;
-         break;
-
-         case 3:
-         PORT_7_SEGMENT=0b00110000;
-         break;
-
-         case 4:
-         PORT_7_SEGMENT=0b00011001;
-         break;
-
-         case 5:
-         PORT_7_SEGMENT=0b00010010;
-         break;
-
-         case 6:
          PORT_7_SEGMENT=0b00000010;
          break;
 
+         case 1:
+         PORT_7_SEGMENT=0b11001111;
+         break;
+
+         case 2:
+         PORT_7_SEGMENT=0b00101001;
+         break;
+
+         case 3:
+         PORT_7_SEGMENT=0b01001001;
+         break;
+
+         case 4:
+         PORT_7_SEGMENT=0b11000101;
+         break;
+
+         case 5:
+         PORT_7_SEGMENT=0b01010001;
+         break;
+
+         case 6:
+         PORT_7_SEGMENT=0b00010001;
+         break;
+
          case 7:
-         PORT_7_SEGMENT=0b01111000;
+         PORT_7_SEGMENT=0b11001011;
          break;
 
          case 8:
@@ -120,7 +120,7 @@ switch (NUMBER)//Maps the number in number to the display rather crudely (its ve
          break;
 
          case 9:
-         PORT_7_SEGMENT=0b00010000;
+         PORT_7_SEGMENT=0b01000001;
          break;
       }
 }
