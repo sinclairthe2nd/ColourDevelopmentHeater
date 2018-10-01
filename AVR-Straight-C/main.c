@@ -165,7 +165,7 @@ int main(void)
  ADCSRA |= (1 << ADSC);         // start ADC measurement
  while (ADCSRA & (1 << ADSC) ); // wait till conversion complete 
  
- temp = ADCH*linearm;
+ temp = ADCH*linearm;           //this Calculates the Temperature from the ADC-Value by solving a linear Equation
  temp = temp - linearb;
  SevenSegment(temp);
 
